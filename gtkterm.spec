@@ -1,9 +1,7 @@
 Name:           gtkterm
 Version:        0.99.5
-Release:        %mkrel 2
-
+Release:        %mkrel 3
 Summary:        Serial port terminal
-
 Group:          Communications
 License:        GPLv2+
 URL:            http://www.jls-info.com/julien/linux
@@ -41,7 +39,7 @@ Exec=%{name}
 Icon=terminals_section
 Terminal=false
 Type=Application
-Categories=GTK;
+Categories=GTK;RemoteAccess;Network;
 EOF
 
 %find_lang %{name}
