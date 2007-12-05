@@ -1,11 +1,11 @@
 Name:           gtkterm
 Version:        0.99.5
-Release:        %mkrel 1
+Release:        %mkrel 2
 
 Summary:        Serial port terminal
 
 Group:          Communications
-License:        GPL
+License:        GPLv2+
 URL:            http://www.jls-info.com/julien/linux
 Source0:        http://www.jls-info.com/julien/linux/%{name}-%{version}.tar.bz2
 BuildRoot:      %{_tmppath}/%{name}-buildroot 
@@ -24,27 +24,13 @@ Similar to minicom or hyperterminal.
 %prep
 %setup -q
 
-
 %build
-%configure
+%configure2_5x
 %make
 
 %install
 rm -rf $RPM_BUILD_ROOT
-%makeinstall
-
-
-# Menu
-mkdir -p $RPM_BUILD_ROOT%{_menudir}
-# FIXME : Add icons into menu
-cat > $RPM_BUILD_ROOT%{_menudir}/%{name} <<EOF
-?package(%name): needs="x11" \
-section="More Applications/Communications" \
-title="Gtkterm" longtitle="%{summary}" command="%{name}"  
-#icon="%{name}.png"
-EOF
-#
-
+%makeinstall_std
 
 %find_lang %{name}
 
@@ -54,7 +40,4 @@ rm -rf $RPM_BUILD_ROOT
 %files -f %{name}.lang
 %defattr(-,root,root,-)
 %{_bindir}/%{name}
-%{_menudir}/%{name}
 %{_mandir}/man1/%{name}.1*
-
-
