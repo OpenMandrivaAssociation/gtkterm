@@ -32,12 +32,31 @@ Similar to minicom or hyperterminal.
 rm -rf $RPM_BUILD_ROOT
 %makeinstall_std
 
+mkdir -p %buildroot%_datadir/applications
+cat > %buildroot%_datadir/applications/mandriva-%{name}.desktop <<EOF
+[Desktop Entry]
+Name=GTKTerm
+Comment=Serial port terminal
+Exec=%{name}
+Icon=terminals_section
+Terminal=false
+Type=Application
+Categories=GTK;
+EOF
+
 %find_lang %{name}
 
 %clean
 rm -rf $RPM_BUILD_ROOT
 
+%post
+%update_menus
+
+%postun
+%clean_menus
+
 %files -f %{name}.lang
 %defattr(-,root,root,-)
 %{_bindir}/%{name}
 %{_mandir}/man1/%{name}.1*
+%{_datadir}/applications/*.desktop
