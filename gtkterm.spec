@@ -6,6 +6,7 @@ Group:          Communications
 License:        GPLv2+
 URL:            http://www.jls-info.com/julien/linux
 Source0:        http://www.jls-info.com/julien/linux/%{name}-%{version}.tar.bz2
+BuildRoot:      %{_tmppath}/%{name}-buildroot 
 
 BuildRequires:  gtk2-devel 
 BuildRequires:  gettext 
