@@ -1,11 +1,17 @@
 Name:           gtkterm
 Version:        0.99.5
-Release:        %mkrel 5
+Release:        %mkrel 6
 Summary:        Serial port terminal
 Group:          Communications
 License:        GPLv2+
 URL:            http://www.jls-info.com/julien/linux
 Source0:        http://www.jls-info.com/julien/linux/%{name}-%{version}.tar.bz2
+Patch0:         gtkterm-0.99.5-fixes.patch
+Patch1:         gtkterm-0.99.5-crlf.patch
+Patch2:         gtkterm-0.99.5-scrollback.patch
+Patch3:         gtkterm-0.99.5-sendhex.patch
+Patch4:         gtkterm-0.99.5-usb.patch
+Patch5:		gtkterm-0.99.5-fix-str-fmt.patch
 BuildRoot:      %{_tmppath}/%{name}-buildroot 
 
 BuildRequires:  gtk2-devel 
@@ -21,6 +27,12 @@ Similar to minicom or hyperterminal.
 
 %prep
 %setup -q
+%patch0 -p1
+%patch1 -p1 -b .crlf
+%patch2 -p1 -b .scrollback
+%patch3 -p1 -b .sendhex
+%patch4 -p1 -b .usb
+%patch5 -p0 -b .str
 
 %build
 %configure2_5x
