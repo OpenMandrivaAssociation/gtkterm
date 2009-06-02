@@ -1,6 +1,6 @@
 Name:           gtkterm
 Version:        0.99.5
-Release:        %mkrel 6
+Release:        %mkrel 7
 Summary:        Serial port terminal
 Group:          Communications
 License:        GPLv2+
