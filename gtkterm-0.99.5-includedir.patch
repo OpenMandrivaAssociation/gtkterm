@@ -1,0 +1,11 @@
+--- src/Makefile.in.vte	2005-09-22 22:04:01.000000000 +0200
++++ src/Makefile.in	2010-08-22 09:36:34.000000000 +0200
+@@ -149,7 +149,7 @@
+ 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
+ CCLD = $(CC)
+ LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
+-CFLAGS = @CFLAGS@
++CFLAGS = @CFLAGS@ @TERMINAL_WIDGET_CFLAGS@
+ DIST_SOURCES = $(gtkterm_SOURCES)
+ DIST_COMMON = Makefile.am Makefile.in
+ SOURCES = $(gtkterm_SOURCES)

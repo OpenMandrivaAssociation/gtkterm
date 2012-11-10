@@ -1,0 +1,148 @@
+diff -Nru gtkterm-0.99.5.orig/src/config.c gtkterm-0.99.5/src/config.c
+--- gtkterm-0.99.5.orig/src/config.c	2005-11-14 20:43:56.000000000 +0100
++++ gtkterm-0.99.5/src/config.c	2007-11-28 22:46:32.000000000 +0100
+@@ -84,6 +84,7 @@
+ gint *show_cursor;
+ gint *rows;
+ gint *columns;
++gint *scrollback;
+ gint *visual_bell;
+ gint *foreground_red;
+ gint *foreground_blue;
+@@ -111,6 +112,7 @@
+   {"term_show_cursor", CFG_BOOL, &show_cursor},
+   {"term_rows", CFG_INT, &rows},
+   {"term_columns", CFG_INT, &columns},
++  {"term_scrollback", CFG_INT, &scrollback},
+   {"term_visual_bell", CFG_BOOL, &visual_bell},
+   {"term_foreground_red", CFG_INT, &foreground_red},
+   {"term_foreground_blue", CFG_INT, &foreground_blue},
+@@ -147,6 +149,7 @@
+ static gint config_color_bg(GtkWidget *, gpointer);
+ static void Transparency_OnOff(GtkWidget *, gpointer);
+ static void change_scale(GtkRange *, gpointer);
++static gint scrollback_set(GtkWidget *, GdkEventFocus *, gpointer);
+ 
+ extern GtkWidget *display;
+ 
+@@ -860,6 +863,9 @@
+ 	    if(columns[i] != 0)
+ 	      term_conf.columns = columns[i];
+ 
++	    if(scrollback[i] != 0)
++	      term_conf.scrollback = scrollback[i];
++
+ 	    if(visual_bell[i] != -1)
+ 	      term_conf.visual_bell = (gboolean)visual_bell[i];
+ 	    else
+@@ -884,6 +890,7 @@
+ 		term_conf.show_cursor = TRUE;
+ 		term_conf.rows = 80;
+ 		term_conf.columns = 25;
++		term_conf.scrollback = 100;
+ 		term_conf.visual_bell = FALSE;
+ 
+ 		term_conf.foreground_color.red = 43253;
+@@ -912,6 +919,7 @@
+ 
+   vte_terminal_set_background_transparent(VTE_TERMINAL(display), term_conf.transparency);
+   vte_terminal_set_size (VTE_TERMINAL(display), term_conf.rows, term_conf.columns);
++  vte_terminal_set_scrollback_lines (VTE_TERMINAL(display), term_conf.scrollback);
+   vte_terminal_set_color_foreground (VTE_TERMINAL(display), &term_conf.foreground_color);
+   vte_terminal_set_color_background (VTE_TERMINAL(display), &term_conf.background_color);
+   vte_terminal_set_background_saturation(VTE_TERMINAL(display), (gdouble)term_conf.background_saturation);
+@@ -1023,6 +1031,7 @@
+   term_conf.show_cursor = TRUE;
+   term_conf.rows = 80;
+   term_conf.columns = 25;
++  term_conf.scrollback = 100;
+   term_conf.visual_bell = TRUE;
+ 
+   Selec_couleur(&term_conf.foreground_color, 0.66, 0.66, 0.66);
+@@ -1145,6 +1154,10 @@
+   cfgStoreValue(cfg, "term_columns", string, CFG_INI, pos);
+   g_free(string);
+   
++  string = g_strdup_printf("%d", term_conf.scrollback);
++  cfgStoreValue(cfg, "term_scrollback", string, CFG_INI, pos);
++  g_free(string);
++  
+   if(term_conf.visual_bell == FALSE)
+     string = g_strdup_printf("False");
+   else
+@@ -1259,8 +1272,8 @@
+ 
+ gint Config_Terminal(GtkWidget *widget, guint param)
+ {
+-  GtkWidget *Dialog, *BoiteH, *BoiteV, *Label, *Check_Bouton, *Bouton, *Eventbox, *Table, *HScale;
+-  gchar *fonte;
++  GtkWidget *Dialog, *BoiteH, *BoiteV, *Label, *Check_Bouton, *Bouton, *Eventbox, *Table, *HScale, *Entry;
++  gchar *fonte, *scrollback;
+ 
+   Dialog = gtk_dialog_new_with_buttons (_("Terminal configuration"),
+ 					NULL,
+@@ -1268,7 +1281,7 @@
+ 					GTK_STOCK_CLOSE,
+ 					GTK_RESPONSE_CLOSE,
+ 					NULL);
+-  gtk_widget_set_size_request(GTK_WIDGET(Dialog), 400, 300);
++  gtk_widget_set_size_request(GTK_WIDGET(Dialog), 400, 400);
+ 
+ 
+   BoiteV = gtk_vbox_new(FALSE, 0);
+@@ -1340,6 +1353,22 @@
+   gtk_box_pack_start(GTK_BOX(BoiteV), HScale, FALSE, TRUE, 0);
+ 
+ 
++  Label = gtk_label_new(NULL);
++  gtk_misc_set_alignment(GTK_MISC(Label), 0, 0);
++  gtk_label_set_markup(GTK_LABEL(Label), "<b>Screen : </b>");  
++  gtk_box_pack_start(GTK_BOX(BoiteV), Label, FALSE, TRUE, 10);
++
++  BoiteH = gtk_hbox_new(FALSE, 0);
++  Label = gtk_label_new("Scrollback lines :");
++  gtk_box_pack_start(GTK_BOX(BoiteH), Label, FALSE, TRUE, 0);
++  Entry = gtk_entry_new_with_max_length(4);
++  scrollback =  g_strdup_printf("%d", term_conf.scrollback);
++  gtk_entry_set_text(GTK_ENTRY(Entry), scrollback);
++  g_free(scrollback);
++  g_signal_connect(GTK_OBJECT(Entry), "focus-out-event", G_CALLBACK(scrollback_set), 0);
++  gtk_box_pack_start(GTK_BOX(BoiteH), Entry, FALSE, TRUE, 0);
++  gtk_box_pack_start(GTK_BOX(BoiteV), BoiteH, FALSE, TRUE, 0);
++
+   gtk_container_add(GTK_CONTAINER(GTK_DIALOG(Dialog)->vbox), BoiteV);
+ 
+   //g_signal_connect(GTK_OBJECT(Dialog), "response", G_CALLBACK(config_term_response), 0);
+@@ -1472,3 +1501,21 @@
+   cfgStoreValue(cfg, "term_background_saturation", string, CFG_INI, 0);
+   g_free(string);  
+ }
++
++gint scrollback_set(GtkWidget *Entry, GdkEventFocus *event, gpointer data)
++{
++  const gchar *text;
++  gint scrollback;
++  
++  if (Entry)
++  {
++    text = gtk_entry_get_text(GTK_ENTRY(Entry));
++    scrollback = (gint)g_ascii_strtoll(text, NULL, 10);
++    if (scrollback)
++      term_conf.scrollback = scrollback;
++    else
++      term_conf.scrollback = 100;
++    vte_terminal_set_scrollback_lines (VTE_TERMINAL(display), term_conf.scrollback);
++  }
++  return FALSE;
++}
+diff -Nru gtkterm-0.99.5.orig/src/config.h gtkterm-0.99.5/src/config.h
+--- gtkterm-0.99.5.orig/src/config.h	2003-08-15 16:16:26.000000000 +0200
++++ gtkterm-0.99.5/src/config.h	2007-11-12 17:54:59.000000000 +0100
+@@ -43,6 +43,7 @@
+   gboolean show_cursor;
+   gint rows;
+   gint columns;
++  gint scrollback;
+   gboolean visual_bell;
+   GdkColor foreground_color;
+   GdkColor background_color;
