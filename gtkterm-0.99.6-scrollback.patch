@@ -1,22 +1,6 @@
 diff -Nru gtkterm-0.99.5.orig/src/config.c gtkterm-0.99.5/src/config.c
 --- gtkterm-0.99.5.orig/src/config.c	2005-11-14 20:43:56.000000000 +0100
 +++ gtkterm-0.99.5/src/config.c	2007-11-28 22:46:32.000000000 +0100
-@@ -84,6 +84,7 @@
- gint *show_cursor;
- gint *rows;
- gint *columns;
-+gint *scrollback;
- gint *visual_bell;
- gint *foreground_red;
- gint *foreground_blue;
-@@ -111,6 +112,7 @@
-   {"term_show_cursor", CFG_BOOL, &show_cursor},
-   {"term_rows", CFG_INT, &rows},
-   {"term_columns", CFG_INT, &columns},
-+  {"term_scrollback", CFG_INT, &scrollback},
-   {"term_visual_bell", CFG_BOOL, &visual_bell},
-   {"term_foreground_red", CFG_INT, &foreground_red},
-   {"term_foreground_blue", CFG_INT, &foreground_blue},
 @@ -147,6 +149,7 @@
  static gint config_color_bg(GtkWidget *, gpointer);
  static void Transparency_OnOff(GtkWidget *, gpointer);
@@ -25,40 +9,6 @@ diff -Nru gtkterm-0.99.5.orig/src/config.c gtkterm-0.99.5/src/config.c
  
  extern GtkWidget *display;
  
-@@ -860,6 +863,9 @@
- 	    if(columns[i] != 0)
- 	      term_conf.columns = columns[i];
- 
-+	    if(scrollback[i] != 0)
-+	      term_conf.scrollback = scrollback[i];
-+
- 	    if(visual_bell[i] != -1)
- 	      term_conf.visual_bell = (gboolean)visual_bell[i];
- 	    else
-@@ -884,6 +890,7 @@
- 		term_conf.show_cursor = TRUE;
- 		term_conf.rows = 80;
- 		term_conf.columns = 25;
-+		term_conf.scrollback = 100;
- 		term_conf.visual_bell = FALSE;
- 
- 		term_conf.foreground_color.red = 43253;
-@@ -912,6 +919,7 @@
- 
-   vte_terminal_set_background_transparent(VTE_TERMINAL(display), term_conf.transparency);
-   vte_terminal_set_size (VTE_TERMINAL(display), term_conf.rows, term_conf.columns);
-+  vte_terminal_set_scrollback_lines (VTE_TERMINAL(display), term_conf.scrollback);
-   vte_terminal_set_color_foreground (VTE_TERMINAL(display), &term_conf.foreground_color);
-   vte_terminal_set_color_background (VTE_TERMINAL(display), &term_conf.background_color);
-   vte_terminal_set_background_saturation(VTE_TERMINAL(display), (gdouble)term_conf.background_saturation);
-@@ -1023,6 +1031,7 @@
-   term_conf.show_cursor = TRUE;
-   term_conf.rows = 80;
-   term_conf.columns = 25;
-+  term_conf.scrollback = 100;
-   term_conf.visual_bell = TRUE;
- 
-   Selec_couleur(&term_conf.foreground_color, 0.66, 0.66, 0.66);
 @@ -1145,6 +1154,10 @@
    cfgStoreValue(cfg, "term_columns", string, CFG_INI, pos);
    g_free(string);
@@ -135,14 +85,3 @@ diff -Nru gtkterm-0.99.5.orig/src/config.c gtkterm-0.99.5/src/config.c
 +  }
 +  return FALSE;
 +}
-diff -Nru gtkterm-0.99.5.orig/src/config.h gtkterm-0.99.5/src/config.h
---- gtkterm-0.99.5.orig/src/config.h	2003-08-15 16:16:26.000000000 +0200
-+++ gtkterm-0.99.5/src/config.h	2007-11-12 17:54:59.000000000 +0100
-@@ -43,6 +43,7 @@
-   gboolean show_cursor;
-   gint rows;
-   gint columns;
-+  gint scrollback;
-   gboolean visual_bell;
-   GdkColor foreground_color;
-   GdkColor background_color;
