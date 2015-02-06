@@ -1,7 +1,7 @@
 Summary:	Serial port terminal
 Name:		gtkterm
 Version:	0.99.6
-Release:	2
+Release:	3
 License:	GPLv2+
 Group:		Communications
 Url:		http://fedorahosted.org/gtkterm/
