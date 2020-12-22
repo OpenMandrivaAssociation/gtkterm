@@ -1,6 +1,6 @@
 Summary:	Serial port terminal
 Name:		gtkterm
-Version:	1.1
+Version:	1.1.1
 Release:	1
 License:	GPLv2+
 Group:		Communications
