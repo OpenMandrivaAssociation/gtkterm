@@ -11,6 +11,7 @@ BuildRequires:	meson
 BuildRequires:	pkgconfig(gtk+-3.0)
 BuildRequires:	pkgconfig(vte-2.91)
 BuildRequires:	pkgconfig(gudev-1.0)
+BuildRequires:  pkgconfig(libpcre2-posix)
 
 %description
 Gtkterm is a simple GTK+ terminal used to communicate with a serial port.
