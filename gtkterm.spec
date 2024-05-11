@@ -1,3 +1,5 @@
+%global optflags %{optflags} -Wno-incompatible-function-pointer-types
+
 Summary:	Serial port terminal
 Name:		gtkterm
 Version:	1.3.0
