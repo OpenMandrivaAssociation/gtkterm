@@ -9,6 +9,7 @@ Group:		Communications
 URL:		https://github.com/Jeija/gtkterm
 Source0:        https://github.com/Jeija/gtkterm/archive/%{version}/%{name}-%{version}.tar.gz
 
+BuildRequires:  gettext
 BuildRequires:	meson
 BuildRequires:	pkgconfig(gtk+-3.0)
 BuildRequires:	pkgconfig(vte-2.91)
